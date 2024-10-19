@@ -1,6 +1,6 @@
-import { ProjectionField, ProjectionValue } from './Projection';
-import { ProjectionFieldCount } from './ProjectionFieldCount';
-import prisma from '../prisma/client';
+import { ProjectionField, ProjectionValue } from '../Projection';
+import { ProjectionFieldCount } from '../ProjectionFieldCount';
+import prisma from '../../prisma/client';
 import { Prisma, Projection } from '@prisma/client';
 
 export const getCountForFieldValue = async (

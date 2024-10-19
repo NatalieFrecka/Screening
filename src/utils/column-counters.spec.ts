@@ -1,10 +1,10 @@
-import { TestingFactory } from '../testing/factory';
+import { TestingFactory } from '../../testing/factory';
 import { getCountForFieldValue, getCountsForAllFieldValues } from './column-counters';
-import { ProjectionField, ProjectionValue } from './Projection';
-import { ManyValuesTest, SingleValueTest } from './test-types';
+import { ProjectionField, ProjectionValue } from '../Projection';
+import { ManyValuesTest, SingleValueTest } from '../../testing/test-types';
 
 describe('Column Counters', () => {
-  describe('getSingleCount', () => {
+  describe('getCountForFieldValue', () => {
     test.each<SingleValueTest>([
       { field: 'attribute', value: 'Harvested acres' },
       { field: 'commodity', value: 'Rice' },
@@ -64,7 +64,7 @@ describe('Column Counters', () => {
     });
   });
 
-  describe('getAllCommodityCount', () => {
+  describe('getCountsForAllFieldValues', () => {
     test.each<SingleValueTest>([
       { field: 'attribute', value: 'Harvested acres' },
       { field: 'commodity', value: 'Rice' },
