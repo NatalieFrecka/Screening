@@ -3,5 +3,6 @@ export default {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
-  preset: 'ts-jest'
+  preset: 'ts-jest',
+  setupFilesAfterEnv: ['./jest-setup.ts'],
 };

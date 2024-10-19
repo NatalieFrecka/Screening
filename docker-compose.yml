@@ -1,0 +1,29 @@
+services:
+  db:
+    container_name: db
+    image: postgres:16
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: natalie
+      POSTGRES_PASSWORD: supersecure
+      POSTGRES_DB: data
+    restart: always
+    healthcheck:
+      test: "pg_isready -U natalie -d data"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    container_name: migrate
+    image: node:20
+    command: sh -c "yarn db-push"
+    volumes:
+      - .:/app
+    working_dir: /app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://natalie:supersecure@db:5432/data

@@ -1,43 +1,22 @@
-import { Projection, ProjectionField, ProjectionValue } from './Projection';
+import { ProjectionField, ProjectionValue } from './Projection';
 import { ProjectionFieldCount } from './ProjectionFieldCount';
+import prisma from '../prisma/client';
+import { Prisma, Projection } from '@prisma/client';
 
-export const getCountForFieldValue = (
-  projections: Projection[],
+export const getCountForFieldValue = async (
   field: ProjectionField,
   value: ProjectionValue
-): ProjectionFieldCount => {
-  const count = projections.filter((p) => p[field] === value).length;
+): Promise<ProjectionFieldCount> => {
+  const count = await prisma.projection.count({ where: { [field]: value } });
   return { field, value, count };
 };
 
-export const getCountsForAllFieldValues = (
-  projections: Projection[],
-  field: ProjectionField
-): ProjectionFieldCount[] =>
-  projections.reduce((counts: ProjectionFieldCount[], projection: Projection) => {
-    const existing = counts.find(el => el.value === projection[field]);
-    return existing ? updateCommodityCount(counts, existing) : addNewCommodityCount(counts, field, projection[field]);
-  }, []).sort(sortByCommodity);
+export const getCountsForAllFieldValues = async (field: keyof Projection): Promise<ProjectionFieldCount[]> => {
+  const groups = await prisma.projection.groupBy({
+    by: [field] as Prisma.ProjectionGroupByArgs['by'],
+    orderBy: { [field]: Prisma.SortOrder.asc } as Prisma.ProjectionGroupByArgs['orderBy'],
+    _count: { [field]: true }
+  });
 
-const updateCommodityCount = (
-  counts: ProjectionFieldCount[],
-  existing: ProjectionFieldCount
-): ProjectionFieldCount[] => {
-  const rest = counts.filter(a => a.value !== existing.value);
-  return [...rest, { ...existing, count: existing.count + 1 }];
-};
-
-const addNewCommodityCount = (
-  counts: ProjectionFieldCount[],
-  field: ProjectionField,
-  value: ProjectionValue
-): ProjectionFieldCount[] =>
-  [...counts, { field, value, count: 1 }];
-
-const sortByCommodity = (
-  { value: valueA }: ProjectionFieldCount,
-  { value: valueB }: ProjectionFieldCount
-): number => {
-  if (valueA === valueB) return 0;
-  return valueA.toString().localeCompare(valueB.toString());
+  return groups.map(g => ({ field, value: g[field], count: g._count[field] }));
 };
