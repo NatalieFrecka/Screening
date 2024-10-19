@@ -1,4 +1,5 @@
-import { Projection } from '../src/Commodity';
+import { Projection, ProjectionField, ProjectionValue } from '../src/Projection';
+import { ProjectionFieldCount } from '../src/ProjectionFieldCount';
 
 export const TestingFactory = {
   buildProjection: ({
@@ -17,5 +18,11 @@ export const TestingFactory = {
     yearType,
     year,
     value
-  })
+  }),
+
+  buildFieldCount: (
+    field: ProjectionField,
+    value: ProjectionValue,
+    count: number = 1
+  ): ProjectionFieldCount => ({ field, value, count })
 };
