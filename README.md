@@ -1,37 +1,31 @@
-# Back-end Developer Interview
+## Requirements
 
-## Expectations:
+- Docker
+- Docker compose
+- Node 20
+- yarn
 
-1. Using Python (preferred) or Javascript with any framework(s) you enjoy
-2. Feel free to be creative, but the result NEED NOT BE COMPLEX or excessively time-consuming
-3. We will review your work together during the in-person interview
-4. Send a link to the source, a repository URL or a zip file of your project the day before your interview day
+## Install
 
-## Exercise:
+Run `yarn install`
 
-Start with the included `Projection2021.csv` file. Ignore `FeedGrains.csv` for now.
+## Testing
 
-Create an API service that provides a GET histogram route for each column in the table. For example, the following URLs should be successfully resolved by the service:
+Run `yarn test`
 
-* http://localhost/Commodity/histogram
-* http://localhost/CommodityType/histogram
-* Etc.
+## Prisma
 
-A GET request on any of these URLs should return HTML with the count of how many times each unique value appears in that column of the data. For example in the Commodity column, “Rice” appears 216 times, “Corn” 240, etc.
+Run `yarn generate-client` to generate types
 
-This service should be runnable using one of:
-* (preferred) In Docker using `docker-compose up` or `docker run` command you provide
-* A simple readme describing how to start the service
-* http://repl.it or similar
+## Running locally
 
-Be prepared to talk about one aspect of this exercise you found interesting, or feel free to add (or not) any optimization or feature you find interesting and would like to talk about. For example:
-* Visualizations
-* Testing strategies
-* Persisting data
-* Data modeling / analytics
-* API structure / versioning
-* ???
+After installing and making sure docker is running, run `yarn start`. This will start all the docker containers and
+perform the schema migrations on the db. It will also start a localstack and setup/populate the s3 bucket with the
+Projection2021.csv file in the testing dir.
 
-## Data source notes
-1. `Projection2021.csv` - sourced from the "USDA Agricultural Baseline Database" for the current year projections https://www.ers.usda.gov/media/u55iwexw/projection2021.zip
-2. `FeedGrains.csv` - sourced from the “USDA Feed Grains: Yearbook Tables” available at https://www.ers.usda.gov/data-products/feed-grains-database/feed-grains-yearbook-tables/
+Run `yarn csv-parser:trigger` to send an S3 event to the csv parser lambda. This will populate the db.
+
+You can run `curl "http://localhost/{field}/histogram"` to get data on any of the headers in the Projections2021 csv
+file. Ex `curl "http://localhost/Commodity/histogram"`. You can also add the optional value parameter to get data on
+that specific value. `curl "http://localhost/{field}/histogram?value={value}"` Ex.
+`curl "http://localhost/Commodity/histogram?value=Rice"`
