@@ -1,4 +1,4 @@
-import { ProjectionField, ProjectionValue } from './Projection';
+import { ProjectionField, ProjectionValue } from './ProjectionAliases';
 
 export type ProjectionFieldCount = {
   field: ProjectionField;

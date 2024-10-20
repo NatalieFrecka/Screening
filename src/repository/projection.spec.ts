@@ -1,10 +1,12 @@
 import { TestingFactory } from '../../testing/factory';
-import { getCountForFieldValue, getCountsForAllFieldValues } from './column-counters';
-import { ProjectionField, ProjectionValue } from '../Projection';
+import { ProjectionField, ProjectionValue } from '../types/ProjectionAliases';
 import { ManyValuesTest, SingleValueTest } from '../../testing/test-types';
+import { ProjectionRepo } from './projection';
+import prisma from '../../prisma/client';
+import { Projection } from '@prisma/client';
 
-describe('Column Counters', () => {
-  describe('getCountForFieldValue', () => {
+describe('ProjectionRepo', () => {
+  describe('countSingleFieldValue', () => {
     test.each<SingleValueTest>([
       { field: 'attribute', value: 'Harvested acres' },
       { field: 'commodity', value: 'Rice' },
@@ -16,7 +18,7 @@ describe('Column Counters', () => {
     ])('returns one for the number of $value $field instances there are', async ({ field, value }) => {
       await Promise.all([TestingFactory.insertProjection({ [field]: value })]);
 
-      const actual = await getCountForFieldValue(field, value);
+      const actual = await ProjectionRepo.countSingleFieldValue(field, value);
 
       expect(actual).toEqual(TestingFactory.buildFieldCount(field, value));
     });
@@ -35,7 +37,7 @@ describe('Column Counters', () => {
         TestingFactory.insertProjection({ [field]: value })
       ]);
 
-      const actual = await getCountForFieldValue(field, value);
+      const actual = await ProjectionRepo.countSingleFieldValue(field, value);
 
       expect(actual).toEqual(TestingFactory.buildFieldCount(field, value, 2));
     });
@@ -58,13 +60,13 @@ describe('Column Counters', () => {
         TestingFactory.insertProjection({ [field]: value }),
       ]);
 
-      const actual = await getCountForFieldValue(field, value);
+      const actual = await ProjectionRepo.countSingleFieldValue(field, value);
 
       expect(actual).toEqual(TestingFactory.buildFieldCount(field, value, 2));
     });
   });
 
-  describe('getCountsForAllFieldValues', () => {
+  describe('countAllFieldValues', () => {
     test.each<SingleValueTest>([
       { field: 'attribute', value: 'Harvested acres' },
       { field: 'commodity', value: 'Rice' },
@@ -76,7 +78,7 @@ describe('Column Counters', () => {
     ])('counts one $value $field occurrence', async ({ field, value }) => {
       await Promise.all([TestingFactory.insertProjection({ [field]: value })]);
 
-      const actual = await getCountsForAllFieldValues(field);
+      const actual = await ProjectionRepo.countAllFieldValues(field);
 
       expect(actual).toEqual([{ field, value, count: 1 }]);
     });
@@ -142,7 +144,7 @@ describe('Column Counters', () => {
     ])('counts one $value occurrence for each unique $field', async ({ field, values, expected }) => {
       await Promise.all(buildManyProjections(field, values));
 
-      const actual = await getCountsForAllFieldValues(field);
+      const actual = await ProjectionRepo.countAllFieldValues(field);
 
       expect(actual).toEqual(expected);
     });
@@ -208,12 +210,44 @@ describe('Column Counters', () => {
     ])('counts each instance of a unique commodity', async ({ field, values, expected }) => {
       await Promise.all(buildManyProjections(field, values));
 
-      const actual = await getCountsForAllFieldValues(field);
+      const actual = await ProjectionRepo.countAllFieldValues(field);
 
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('upsertMany', () => {
+    it('upserts a projection', async () => {
+      const projection = TestingFactory.buildProjection();
+
+      await ProjectionRepo.upsertMany([projection]);
+
+      const actual = await prisma.projection.findMany();
+      expect(actual).toEqual([buildProjectionComparator(projection)]);
+    });
+
+    it('upserts many projections', async () => {
+      const projection1 = TestingFactory.buildProjection();
+      const projection2 = TestingFactory.buildProjection();
+      const projections = [projection1, projection2,];
+
+      await ProjectionRepo.upsertMany(projections);
+
+      const actual = await prisma.projection.findMany();
+      expect(actual).toEqual([
+        buildProjectionComparator(projection1),
+        buildProjectionComparator(projection2)
+      ]);
     });
   });
 });
 
 const buildManyProjections = (field: ProjectionField, values: ProjectionValue[]) =>
   values.map(v => TestingFactory.insertProjection({ [field]: v }));
+
+const buildProjectionComparator = (projection: Partial<Projection>) => ({
+  id: expect.any(String),
+  createdAt: expect.anything(),
+  updatedAt: null,
+  ...projection,
+});

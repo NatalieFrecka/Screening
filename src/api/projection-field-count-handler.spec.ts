@@ -1,5 +1,5 @@
 import { TestingFactory } from '../../testing/factory';
-import { ProjectionValue } from '../Projection';
+import { ProjectionValue } from '../types/ProjectionAliases';
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { handler } from './projection-field-count-handler';
 
@@ -33,7 +33,7 @@ describe('ProjectionFieldCountHandler', () => {
     const response = await handler(event);
 
     expect(response.statusCode).toBe(200);
-    expect(JSON.parse(response.body)).toEqual([
+    expect(JSON.parse(response.body!)).toEqual([
       TestingFactory.buildFieldCount(field, 'Barley'),
       TestingFactory.buildFieldCount(field, 'Rice', 2),
     ]);
@@ -47,7 +47,7 @@ describe('ProjectionFieldCountHandler', () => {
     const response = await handler(event);
 
     expect(response.statusCode).toBe(200);
-    expect(JSON.parse(response.body)).toEqual(TestingFactory.buildFieldCount(field, value, 2));
+    expect(JSON.parse(response.body!)).toEqual(TestingFactory.buildFieldCount(field, value, 2));
   });
 
   it('figures out the Projection field regardless of case', async () => {
@@ -57,7 +57,7 @@ describe('ProjectionFieldCountHandler', () => {
     const response = await handler(event);
 
     expect(response.statusCode).toBe(200);
-    expect(JSON.parse(response.body)).toEqual(TestingFactory.buildFieldCount("commodityType", value, 3));
+    expect(JSON.parse(response.body!)).toEqual(TestingFactory.buildFieldCount("commodityType", value, 3));
   });
 
   const buildEvent = (field?: string, value?: ProjectionValue): APIGatewayProxyEventV2 => ({

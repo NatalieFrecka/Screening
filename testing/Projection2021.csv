@@ -1,0 +1,11 @@
+﻿Attribute,Commodity,CommodityType,Units,YearType,Year,Value
+Harvested acres,Rice,Crops,Thousand acres,Market year,2019/20,2472
+Harvested acres,Rice,Crops,Thousand acres,Market year,2020/21,2991
+Harvested acres,Rice,Crops,Thousand acres,Market year,2021/22,2552
+Harvested acres,Barley,Crops,Million acres,Market year,2029/30,2.2
+Harvested acres,Barley,Crops,Million acres,Market year,2030/31,2.2
+Harvested acres,Corn,Crops,Million acres,Market year,2019/20,81.3
+Harvested acres,Upland Cotton,Crops,Million acres,Market year,2027/28,10.6
+Harvested acres,Upland Cotton,Crops,Million acres,Market year,2028/29,10.7
+Harvested acres,Upland Cotton,Crops,Million acres,Market year,2029/30,10.8
+Harvested acres,Upland Cotton,Crops,Million acres,Market year,2030/31,10.9

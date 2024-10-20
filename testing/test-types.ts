@@ -1,5 +1,5 @@
-import { ProjectionField, ProjectionValue } from '../src/Projection';
-import { ProjectionFieldCount } from '../src/ProjectionFieldCount';
+import { ProjectionField, ProjectionValue } from '../src/types/ProjectionAliases';
+import { ProjectionFieldCount } from '../src/types/ProjectionFieldCount';
 
 export type SingleValueTest = {
   field: ProjectionField,
