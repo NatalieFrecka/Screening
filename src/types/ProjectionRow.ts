@@ -5,5 +5,5 @@ export type ProjectionRow = {
   Units: string;
   YearType: string;
   Year: string;
-  Value: number;
+  Value: string;
 }

@@ -4,11 +4,15 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "docker compose up -d",
+    "start": "docker compose up -d && yarn setup-s3",
     "build": "tsc",
     "test": "jest",
     "generate-client": "yarn prisma generate",
-    "db-push": "dotenv -e .env.development -- prisma db push"
+    "db-push": "dotenv -e .env.development -- prisma db push",
+    "setup-s3-bucket": "aws --endpoint-url=http://localhost:4566 s3 mb s3://test-bucket",
+    "populate-s3": "aws --endpoint-url=http://localhost:4566 s3 cp testing/Projection2021.csv s3://test-bucket/Projection2021.csv",
+    "setup-s3": "yarn setup-s3-bucket && yarn populate-s3",
+    "csv-parser:trigger": "curl -i -XPOST \"http://localhost:9000/2015-03-31/functions/function/invocations\" -d @testing/s3-event.json"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.675.0",

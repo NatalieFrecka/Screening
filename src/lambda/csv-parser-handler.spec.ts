@@ -10,6 +10,7 @@ import { sdkStreamMixin } from '@smithy/util-stream';
 describe('CSV Parser Handler', () => {
   beforeEach(() => {
     process.env.AWS_REGION = 'us-east-2';
+    process.env.AWS_S3_ENDPOINT = 'http://localhost:9999';
   });
 
   it('writes projections to the db given a valid csv file', async () => {

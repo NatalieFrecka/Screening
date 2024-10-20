@@ -12,7 +12,7 @@ export const handler = async (event: S3Event) => {
     const body = await S3.getMostRecentFileBody(event);
     const rows = await CSV.parse<ProjectionRow>(body);
     const projectionsToWrite = rows.map(ProjectionRowTransformer.toProjection);
-    await ProjectionRepo.upsertMany(projectionsToWrite);
+    await ProjectionRepo.insertMany(projectionsToWrite);
 
     return { statusCode: 200 };
   } catch (err) {
@@ -31,6 +31,3 @@ export const handler = async (event: S3Event) => {
     return { statusCode: 500, body: (err as Error).message };
   }
 };
-
-exports.handler = handler;
-

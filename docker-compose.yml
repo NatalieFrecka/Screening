@@ -14,6 +14,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - lambda-network
 
   migrate:
     container_name: migrate
@@ -27,3 +29,64 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://natalie:supersecure@db:5432/data
+    networks:
+      - lambda-network
+
+  csv-parser:
+    container_name: csv-parser
+    build:
+      context: .
+      dockerfile: Dockerfile.csv-parser
+    ports:
+      - "9000:8080"
+    volumes:
+      - ~/.aws:/root/.aws:ro
+    environment:
+      AWS_S3_ENDPOINT: http://localstack-container:4566
+      DATABASE_URL: postgresql://natalie:supersecure@db:5432/data
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - lambda-network
+
+  histogram:
+    container_name: histogram
+    build:
+      context: .
+      dockerfile: Dockerfile.histogram
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgresql://natalie:supersecure@db:5432/data
+    networks:
+      - lambda-network
+    depends_on:
+      - db
+
+  localstack:
+    container_name: localstack-container
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+    networks:
+      - lambda-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - histogram
+    networks:
+      - lambda-network
+
+networks:
+  lambda-network:
+    driver: bridge

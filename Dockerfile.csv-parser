@@ -1,0 +1,10 @@
+FROM public.ecr.aws/lambda/nodejs:20
+
+WORKDIR /usr/src/app
+COPY package.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+CMD ["/usr/src/app/dist/src/lambda/csv-parser-handler.handler"]

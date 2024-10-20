@@ -14,7 +14,7 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
       ? await ProjectionRepo.countSingleFieldValue(matchingProjectionKey, value)
       : await ProjectionRepo.countAllFieldValues(matchingProjectionKey);
 
-    return { statusCode: 200, body: JSON.stringify(body), };
+    return { statusCode: 200, body, };
   } catch (err) {
     if (err instanceof InvalidFieldError) {
       return { statusCode: 404, body: err.message };
@@ -27,5 +27,3 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
     return { statusCode: 500, body: (err as Error).message };
   }
 };
-
-exports.handler = handler;

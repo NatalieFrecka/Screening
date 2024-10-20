@@ -22,19 +22,6 @@ export const ProjectionRepo = {
     return groups.map(g => ({ field, value: g[field], count: g._count[field] }));
   },
 
-  upsertMany: async (data: Omit<Projection, 'id' | 'createdAt' | 'updatedAt'>[]) => {
-    const upsertPromises = data.map((fields) =>
-      prisma.projection.upsert({
-        where: {
-          commodity_year: {
-            commodity: fields.commodity,
-            year: fields.year
-          }
-        },
-        update: fields,
-        create: fields
-      }));
-
-    return Promise.all(upsertPromises);
-  }
+  insertMany: async (data: Omit<Projection, 'id' | 'createdAt' | 'updatedAt'>[]) =>
+    prisma.projection.createMany({ data })
 };

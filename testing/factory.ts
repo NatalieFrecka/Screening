@@ -13,7 +13,7 @@ export const TestingFactory = {
     Units: faker.science.unit().name,
     YearType: faker.lorem.words(2),
     Year: `${faker.number.int({ min: 2019, max: 2040 })}/${faker.number.int({ min: 2019, max: 2040 })}`,
-    Value: faker.number.int(),
+    Value: faker.number.int().toString(),
     ...row
   }),
 

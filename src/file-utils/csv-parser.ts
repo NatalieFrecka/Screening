@@ -7,10 +7,20 @@ export const CSV = {
 
     stream
       .pipe(csv())
-      .on('data', (data) => results.push(data))
+      .on('data', (data) => {
+        const normalized = CSV.normalize<T>(data);
+        return results.push(normalized);
+      })
       .on('end', () => resolve(results))
       .on('error', (error) => reject(error));
 
     return results;
-  })
+  }),
+
+  normalize: <T>(data: any): T =>
+    Object.keys(data).reduce((acc: any, key: string) => {
+      acc[key.trim()] = data[key];
+      return acc;
+    }, {} as T)
 };
+

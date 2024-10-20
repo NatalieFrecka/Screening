@@ -8,12 +8,17 @@ import { MissingEnvironmentError } from '../error/MissingEnvironmentError';
 export const S3 = {
   s3Client: () => {
     const region = process.env.AWS_REGION;
+    const endpoint = process.env.AWS_S3_ENDPOINT;
 
-    if (!region) {
-      throw new MissingEnvironmentError('AWS_Region');
+    if (!region || !endpoint) {
+      throw new MissingEnvironmentError('AWS Variable');
     }
 
-    return new S3Client({ region });
+    return new S3Client({
+      region,
+      endpoint,
+      forcePathStyle: true,
+    });
   },
 
   getMostRecentFileBody: async (event: S3Event): Promise<Readable> => {

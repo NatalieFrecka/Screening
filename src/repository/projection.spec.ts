@@ -220,7 +220,7 @@ describe('ProjectionRepo', () => {
     it('upserts a projection', async () => {
       const projection = TestingFactory.buildProjection();
 
-      await ProjectionRepo.upsertMany([projection]);
+      await ProjectionRepo.insertMany([projection]);
 
       const actual = await prisma.projection.findMany();
       expect(actual).toEqual([buildProjectionComparator(projection)]);
@@ -231,7 +231,7 @@ describe('ProjectionRepo', () => {
       const projection2 = TestingFactory.buildProjection();
       const projections = [projection1, projection2,];
 
-      await ProjectionRepo.upsertMany(projections);
+      await ProjectionRepo.insertMany(projections);
 
       const actual = await prisma.projection.findMany();
       expect(actual).toEqual([

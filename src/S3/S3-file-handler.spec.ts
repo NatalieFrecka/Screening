@@ -7,6 +7,7 @@ import { AWSMock } from '../../testing/aws-mock';
 describe('S3FileHandler', () => {
   beforeEach(() => {
     process.env.AWS_REGION = 'us-east-2';
+    process.env.AWS_S3_ENDPOINT = 'http://localhost:9999';
   });
 
   describe('getMostRecentFileBody', () => {
@@ -16,7 +17,7 @@ describe('S3FileHandler', () => {
 
       const action = async () => await S3.getMostRecentFileBody(event);
 
-      expect(action).rejects.toThrow(new MissingEnvironmentError('AWS_Region'));
+      expect(action).rejects.toThrow(new MissingEnvironmentError('AWS Variable'));
     });
 
     it('throws given content type of the file is not text/csv', () => {

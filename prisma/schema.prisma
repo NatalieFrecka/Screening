@@ -20,6 +20,4 @@ model Projection {
   yearType      String
   year          String
   value         Int
-
-  @@unique([commodity, year])
 }
