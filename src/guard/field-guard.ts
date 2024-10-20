@@ -1,4 +1,5 @@
 import { Projection } from '@prisma/client';
+import { InvalidFieldError } from '../error/InvalidFieldError';
 
 const allowedProjectionFields: (keyof Projection)[] = [
   'attribute',
@@ -10,15 +11,14 @@ const allowedProjectionFields: (keyof Projection)[] = [
   'value'
 ];
 
-
 export const FieldGuard = {
   getNearestProjectionField: (field?: string): keyof Projection => {
     const matchingProjectionKey = allowedProjectionFields.find(key => key.toLowerCase() === field?.toLowerCase());
 
-    if(!matchingProjectionKey) {
-      throw new Error("Invalid field name")
+    if (!matchingProjectionKey) {
+      throw new InvalidFieldError(field ?? '');
     }
 
     return matchingProjectionKey;
   }
-}
+};

@@ -4,6 +4,8 @@ import { CSV } from '../file-utils/csv-parser';
 import { ProjectionRow } from '../types/ProjectionRow';
 import { ProjectionRowTransformer } from '../transformations/projection-row';
 import { ProjectionRepo } from '../repository/projection';
+import { MissingFileContentError } from '../error/MissingFileContentError';
+import { InvalidFileTypeError } from '../error/InvalidFileTypeError';
 
 export const handler = async (event: S3Event) => {
   try {
@@ -14,7 +16,19 @@ export const handler = async (event: S3Event) => {
 
     return { statusCode: 200 };
   } catch (err) {
-    return { statusCode: 500, message: (err as Error).message };
+    if (err instanceof InvalidFileTypeError) {
+      return { statusCode: 400, body: err.message };
+    }
+
+    if (err instanceof MissingFileContentError) {
+      return { statusCode: 400, body: err.message };
+    }
+
+    if (typeof err === 'string') {
+      return { statusCode: 500, body: err };
+    }
+
+    return { statusCode: 500, body: (err as Error).message };
   }
 };
 

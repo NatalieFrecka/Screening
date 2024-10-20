@@ -1,4 +1,5 @@
 import { FieldGuard } from './field-guard';
+import { InvalidFieldError } from '../error/InvalidFieldError';
 
 describe('FieldGuard', () => {
   describe('getNearestProjectionField', () => {
@@ -14,7 +15,7 @@ describe('FieldGuard', () => {
 
     it.each(['id', 'createdAt', 'updatedAt', 'INVALID'])('throws given disallowed or invalid key %s', (key) => {
       const action = () => FieldGuard.getNearestProjectionField(key);
-      expect(action).toThrow("Invalid field name");
+      expect(action).toThrow(new InvalidFieldError(key))
     });
   });
 });

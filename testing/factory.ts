@@ -3,9 +3,21 @@ import { ProjectionFieldCount } from '../src/types/ProjectionFieldCount';
 import { Projection } from '@prisma/client';
 import prisma from '../prisma/client';
 import { faker } from '@faker-js/faker';
+import { ProjectionRow } from '../src/types/ProjectionRow';
 
 export const TestingFactory = {
-  buildProjection: (projection: Partial<Projection> = {}) => ({
+  buildProjectionRow: (row: Partial<ProjectionRow> = {}): ProjectionRow => ({
+    Attribute: faker.lorem.words(2),
+    Commodity: faker.food.vegetable(),
+    CommodityType: faker.lorem.words(2),
+    Units: faker.science.unit().name,
+    YearType: faker.lorem.words(2),
+    Year: `${faker.number.int({ min: 2019, max: 2040 })}/${faker.number.int({ min: 2019, max: 2040 })}`,
+    Value: faker.number.int(),
+    ...row
+  }),
+
+  buildProjection: (projection: Partial<Projection> = {}): Omit<Projection, 'id' | 'createdAt' | 'updatedAt'> => ({
     attribute: faker.lorem.words(2),
     commodity: faker.food.vegetable(),
     commodityType: faker.lorem.words(2),
@@ -15,6 +27,7 @@ export const TestingFactory = {
     value: faker.number.int(),
     ...projection
   }),
+
   insertProjection: async (projection: Partial<Projection> = {}): Promise<Projection> =>
     prisma.projection.create({ data: TestingFactory.buildProjection(projection) }),
 

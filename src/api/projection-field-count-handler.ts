@@ -1,6 +1,7 @@
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { ProjectionRepo } from '../repository/projection';
 import { FieldGuard } from '../guard/field-guard';
+import { InvalidFieldError } from '../error/InvalidFieldError';
 
 export const handler = async (event: APIGatewayProxyEventV2) => {
   const field = event.pathParameters?.field;
@@ -15,7 +16,15 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
 
     return { statusCode: 200, body: JSON.stringify(body), };
   } catch (err) {
-    return { statusCode: 500, message: (err as Error).message };
+    if (err instanceof InvalidFieldError) {
+      return { statusCode: 404, body: err.message };
+    }
+
+    if(typeof err === 'string') {
+      return { statusCode: 500, body: err };
+    }
+
+    return { statusCode: 500, body: (err as Error).message };
   }
 };
 
